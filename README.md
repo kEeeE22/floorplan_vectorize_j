@@ -14,7 +14,19 @@ git clone https://github.com/kEeeE22/floorplan_vectorize_j.git
 cd pp_export
 ```
 
-2. Cài đặt các thư viện cần thiết:
+2. Tạo môi trường ảo (khuyến nghị):
+```bash
+# Tạo môi trường ảo
+python -m venv venv
+
+# Kích hoạt môi trường ảo
+# Windows:
+venv\Scripts\activate
+# Linux/Mac:
+source venv/bin/activate
+```
+
+3. Cài đặt các thư viện cần thiết:
 ```bash
 pip install -r requirements.txt
 ```
