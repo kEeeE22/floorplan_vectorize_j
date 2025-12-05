@@ -1,0 +1,4 @@
+main:
+  img_path: 'D:\deepfloor\test_28_11\47499272.jpg'
+  model_path: 'predict_segment/checkpoint/checkpoint_20251103_014639.pt'
+  plotting: 'False'

@@ -1,0 +1,4 @@
+.venv
+output
+predict_segment/checkpoint
+.idea
