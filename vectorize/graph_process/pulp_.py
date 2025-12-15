@@ -10,26 +10,20 @@ def smart_snap_optimization(G, snap_thresh=15.0):
     """
     print(f"[INFO] Bắt đầu tối ưu hóa vị trí nút (Threshold={snap_thresh})...")
 
-    # 1. Lấy danh sách nút và tạo mapping index
     nodes = list(G.nodes())
     node_to_idx = {n: i for i, n in enumerate(nodes)}
     coords = np.array(nodes)
     N = len(nodes)
 
-    # 2. Dùng KDTree tìm các cặp điểm cần nối (Lấy từ code của bạn)
     tree = cKDTree(coords)
-    # Tìm các cặp điểm cách nhau < snap_thresh
     pairs = tree.query_pairs(r=snap_thresh)
 
     if not pairs:
         print("Không tìm thấy điểm nào cần nối.")
         return G
 
-    # 3. Thiết lập bài toán tối ưu (Pulp)
     prob = pulp.LpProblem("Smart_Snap", pulp.LpMinimize)
 
-    # Biến số: Tọa độ mới (dx, dy) cho từng nút
-    # gx, gy là toạ độ MỚI sau khi chỉnh sửa
     gx = {i: pulp.LpVariable(f"gx_{i}") for i in range(N)}
     gy = {i: pulp.LpVariable(f"gy_{i}") for i in range(N)}
 
@@ -87,5 +81,5 @@ def smart_snap_optimization(G, snap_thresh=15.0):
     # Relabel để gộp các nút trùng nhau
     new_G = nx.relabel_nodes(G, mapping, copy=True)
 
-    print(f"Đã tối ưu xong. Số nút giảm từ {len(G.nodes())} xuống {len(new_G.nodes())}")
+    print(f"Số nút giảm từ {len(G.nodes())} xuống {len(new_G.nodes())}")
     return new_G

@@ -49,7 +49,12 @@ main:
 ```bash
 python main.py
 ```
+hoặc 
 
+```bash
+python app.py
+```
+Dịch vụ sẽ chạy ở localhost:8000
 ### Quy trình xử lý
 
 Chương trình sẽ tự động thực hiện các bước:

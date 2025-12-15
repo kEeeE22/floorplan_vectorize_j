@@ -7,27 +7,24 @@ from .utils import project_point_on_segment
 def build_labeled_graph(walls, windows):
     G = nx.Graph()
 
-    def add_polylines(polylines, label_type):
+    def add_polylines(polylines, is_window_flag):
         for poly in polylines:
             for i in range(len(poly) - 1):
                 p1 = poly[i]
-                
+
                 p2 = poly[i+1]
 
-                # Làm tròn và chuyển về tuple để nối khớp các điểm gần nhau
                 u = tuple(map(lambda x: int(round(x)), p1))
                 v = tuple(map(lambda x: int(round(x)), p2))
 
                 if u != v:
                     dist = math.hypot(u[0]-v[0], u[1]-v[1])
-                    # QUAN TRỌNG: Gán thuộc tính 'kind' (loại) cho cạnh
-                    G.add_edge(u, v, weight=dist, kind=label_type)
+                    G.add_edge(u, v, weight=dist, is_window=is_window_flag)
 
-    # Thêm tường với nhãn 'wall'
-    add_polylines(walls, label_type='wall')
+    add_polylines(walls, is_window_flag=False)
 
-    # Thêm cửa với nhãn 'window'
-    add_polylines(windows, label_type='window')
+    # Thêm cửa sổ (is_window = True)
+    add_polylines(windows, is_window_flag=True)
 
     return G
 

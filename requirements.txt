@@ -8,3 +8,7 @@ PyYAML
 torch
 torchvision
 matplotlib
+uvicorn
+fastapi
+pydantic
+python-multipart
