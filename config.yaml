@@ -6,4 +6,4 @@ main:
 segment:
   patch_size: 192
   stride: 96
-  save_patches: 'True'
+  save_patches: 'False'
