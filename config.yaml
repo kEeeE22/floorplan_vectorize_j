@@ -1,4 +1,9 @@
 main:
-  img_path: 'D:\deepfloor\test_28_11\47499272.jpg'
+  img_path: "C:\\Users\\Admin\\Downloads\\test23.png"
   model_path: 'predict_segment/checkpoint/checkpoint_20251103_014639.pt'
   plotting: 'False'
+
+segment:
+  patch_size: 192
+  stride: 96
+  save_patches: 'True'

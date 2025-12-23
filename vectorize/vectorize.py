@@ -10,7 +10,8 @@ def vectorize(raw_path, clean_path):
 
     #get wall from raw
     raw = cv2.imread(raw_path)
-
+    print('Raw shape:')
+    print(raw.shape)
     raw_extractor = rawFloorplanExtractor()
     binary, contour_img = raw_extractor.get_raw_contours(raw)
     skeleton_image, vectors = raw_extractor.skeleton_to_vectors(binary)

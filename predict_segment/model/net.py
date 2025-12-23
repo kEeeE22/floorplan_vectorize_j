@@ -119,7 +119,7 @@ class DFPmodel(torch.nn.Module):
         pad = ((np.array(shape[2:]) - 1) / 2).astype(int)
         conv = nn.Conv2d(1, 1, shape[2:], 1, list(pad), bias=False)
         conv.weight = w
-        conv.to(self.device);
+        conv.to(self.device)
         return conv(t)
 
     def non_local_context(self, t1, t2, idx, stride=4):
@@ -155,6 +155,9 @@ class DFPmodel(torch.nn.Module):
         return out
 
     def forward(self, x):
+
+        input_size = x.size()[2:]
+
         results = []
         for ii, model in enumerate(self.features):
             x = model(x)
@@ -165,7 +168,7 @@ class DFPmodel(torch.nn.Module):
             x = rbtran(x) + self.rbconvs[i](results[3 - i])
             x = F.relu(self.rbgrs[i](x))
             rbfeatures.append(x)
-        logits_cw = F.interpolate(self.rbconvs[-1](x), 512)
+        logits_cw = F.interpolate(self.rbconvs[-1](x), size=input_size, mode='bilinear', align_corners=True)
         rtfeatures = []
         x = results[-1]
         for j, rttran in enumerate(self.rttrans):
@@ -173,6 +176,6 @@ class DFPmodel(torch.nn.Module):
             x = F.relu(self.rtgrs[j](x))
             x = self.non_local_context(rbfeatures[j], x, j)
 
-        logits_r = F.interpolate(self.last(x), 512)
+        logits_r = F.interpolate(self.last(x), size=input_size, mode='bilinear', align_corners=True)
 
         return logits_r, logits_cw
