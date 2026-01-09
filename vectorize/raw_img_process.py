@@ -5,7 +5,7 @@ from rdp import rdp
 from skan import Skeleton
 
 class rawFloorplanExtractor:
-    def __init__(self, contour_threshold=60, rdp_epsilon=2.0, min_length=10):
+    def __init__(self, contour_threshold=150, rdp_epsilon=2.0, min_length=10):
         self.threshold = contour_threshold
         self.epsilon = rdp_epsilon
         self.min_length = min_length

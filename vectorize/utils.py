@@ -7,11 +7,11 @@ def plot_graph(new_new_g):
     plt.figure(figsize=(12, 12))
     pos = {n: n for n in new_new_g.nodes()}
 
-    wall_edges = [(u, v) for u, v, d in new_new_g.edges(data=True) if d.get('kind') == 'wall']
-    window_edges = [(u, v) for u, v, d in new_new_g.edges(data=True) if d.get('kind') == 'window']
+    wall_edges = [(u, v) for u, v, d in new_new_g.edges(data=True) if d.get('is_window') == False]
+    window_edges = [(u, v) for u, v, d in new_new_g.edges(data=True) if d.get('is_window') == True]
 
     nx.draw_networkx_edges(new_new_g, pos, edgelist=wall_edges, edge_color='orange', width=3, label='Tường')
-    nx.draw_networkx_edges(new_new_g, pos, edgelist=window_edges, edge_color='cyan', width=3, style='dashed', label='Cửa sổ')
+    nx.draw_networkx_edges(new_new_g, pos, edgelist=window_edges, edge_color='cyan', width=3, label='Cửa sổ')
     nx.draw_networkx_nodes(new_new_g, pos, node_size=30, node_color='red')
 
     plt.gca().invert_yaxis()

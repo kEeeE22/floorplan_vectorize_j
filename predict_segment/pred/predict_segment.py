@@ -186,12 +186,14 @@ def predict_segment(image_path, loadmodel, postprocess=True):
 
     model = initialize_model_only(loadmodel, device)
 
+    patch_size = config['segment']['patch_size']
+    stride = config['segment']['stride']
+    save_patches = config['segment']['save_patches']
     print("Running sliding window inference...")
-    logits_r, logits_cw = sliding_window_inference(model, image_path, patch_size=config['segment']['patch_size'], stride=config['segment']['stride'], device=device, save_patches=config['segment']['save_patches'])
+    logits_r, logits_cw = sliding_window_inference(model, image_path, patch_size=patch_size, stride=stride, device=device, save_patches=save_patches)
 
     predroom = np.argmax(logits_r, axis=2)      # (H, W)
-    predboundary = np.argmax(logits_cw, axis=2) # (H, W)
-
+    predboundary = np.argmax(logits_cw, axis=2) # (H, W)     
     if postprocess:
         print("Post-processing...")
         predroom = post_process(predroom, predboundary)
@@ -204,8 +206,8 @@ def predict_segment(image_path, loadmodel, postprocess=True):
     os.makedirs(directory_path, exist_ok=True)
     input_name = os.path.splitext(os.path.basename(image_path))[0]
     suffix = "_post" if postprocess else ""
-    room_path = f'{directory_path}{input_name}{suffix}_room.png'
-    boundary_path = f'{directory_path}{input_name}{suffix}_boundary.png'
+    room_path = f'{directory_path}{input_name}{suffix}_{patch_size}_{stride}_room.png'
+    boundary_path = f'{directory_path}{input_name}{suffix}_{patch_size}_{stride}_boundary.png'
 
     cv2.imwrite(room_path, rgb[:,:,::-1])
     cv2.imwrite(boundary_path, cv2.cvtColor(predboundary_rgb, cv2.COLOR_RGB2BGR))

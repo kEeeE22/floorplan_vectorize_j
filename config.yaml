@@ -1,9 +1,9 @@
 main:
-  img_path: "C:\\Users\\Admin\\Downloads\\test23.png"
-  model_path: 'predict_segment/checkpoint/checkpoint_20251103_014639.pt'
-  plotting: 'False'
+  img_path: "C:\\Users\\Admin\\Downloads\\result1.png"
+  model_path: 'predict_segment/checkpoint/checkpoint_20260107_023247.pt'
+  plotting: True
 
 segment:
-  patch_size: 192
-  stride: 96
-  save_patches: 'False'
+  patch_size: 512
+  stride: 256
+  save_patches: False

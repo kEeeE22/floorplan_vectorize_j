@@ -19,8 +19,8 @@ class cleanFloorplanExtractor:
         img_rgb = cv2.cvtColor(resized_segment, cv2.COLOR_BGR2RGB)
 
             # ===== MASK CỬA SỔ THEO MÀU CHÍNH XÁC =====
-        target = np.array([255, 60, 128])
-        wall_target = np.array([255,255,255])
+        wall_target = np.array([255, 60, 128])
+        target = np.array([255,255,255])
 
         diff = np.abs(img_rgb - target)
 
