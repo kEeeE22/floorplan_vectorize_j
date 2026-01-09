@@ -1,6 +1,6 @@
 main:
   img_path: "C:\\Users\\Admin\\Downloads\\result1.png"
-  model_path: 'predict_segment/checkpoint/checkpoint_20260107_023247.pt'
+  model_path: 'predict_segment/checkpoint/checkpoint_20251230_021157.pt'
   plotting: True
 
 segment:

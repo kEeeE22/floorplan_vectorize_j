@@ -13,8 +13,8 @@ def vectorize(raw_path, clean_path):
     print('Raw shape:')
     print(raw.shape)
     raw_extractor = rawFloorplanExtractor()
-    binary, contour_img = raw_extractor.get_raw_contours(raw)
-    skeleton_image, vectors = raw_extractor.skeleton_to_vectors(binary)
+    # binary, contour_img = raw_extractor.get_raw_contours(raw)
+    # skeleton_image, vectors = raw_extractor.skeleton_to_vectors(binary)
 
     #get window from clean
     clean = cv2.imread(clean_path)
@@ -28,10 +28,10 @@ def vectorize(raw_path, clean_path):
     #vectors
     win = clean_extractor.get_openings_skel(window_mask, kernel=1, iters=1)
 
-    # skeleton_image, vectors = raw_extractor.skeleton_to_vectors(wall_mask)
-    filtered_vectors = wall_line_check(
-        raw_vectors=vectors, clean_wall_mask=wall_mask, threshold=0.2,
-        search_tolerance=10, num_samples=5)
+    skeleton_image, vectors = raw_extractor.skeleton_to_vectors(wall_mask)
+    # filtered_vectors = wall_line_check(
+    #     raw_vectors=vectors, clean_wall_mask=wall_mask, threshold=0.2,
+    #     search_tolerance=10, num_samples=5)
     
     #graph
     G = build_labeled_graph(vectors, win)

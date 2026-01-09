@@ -9,7 +9,6 @@ def plot_graph(new_new_g):
 
     wall_edges = [(u, v) for u, v, d in new_new_g.edges(data=True) if d.get('is_window') == False]
     window_edges = [(u, v) for u, v, d in new_new_g.edges(data=True) if d.get('is_window') == True]
-
     nx.draw_networkx_edges(new_new_g, pos, edgelist=wall_edges, edge_color='orange', width=3, label='Tường')
     nx.draw_networkx_edges(new_new_g, pos, edgelist=window_edges, edge_color='cyan', width=3, label='Cửa sổ')
     nx.draw_networkx_nodes(new_new_g, pos, node_size=30, node_color='red')
@@ -117,11 +116,11 @@ def to_json(edges, default_thickness=150, file_name='floorplan_minicad.json'):
 
     node_map = {}
     for i, node in enumerate(nodes.keys()):
-        # Tạo ID vertex v1, v2...
         v_id = f"v{i+1}"
         node_map[node] = v_id
         x, y = node
-        data["vertices"][v_id] = {"x": float(x), "y": float(y)}
+        # Làm tròn tọa độ khi xuất JSON
+        data["vertices"][v_id] = {"x": round(x, 2), "y": round(y, 2)}
 
     # -----------------------------------------------
     # 2. Tạo walls (cho TẤT CẢ cạnh) và windows (nếu có)
@@ -144,31 +143,27 @@ def to_json(edges, default_thickness=150, file_name='floorplan_minicad.json'):
         }
 
         # --- BƯỚC B: NẾU LÀ CỬA SỔ -> TẠO INSTANCE ĐÈ LÊN ---
-        # Kiểm tra cờ is_window (từ code trước) hoặc kind (từ code cũ)
         is_window = d.get("is_window") is True or d.get("kind") == "window"
 
         if is_window:
             iid = f"win{inst_counter}"
             length = float(d.get("weight", 0))
-
-            # Đặt cửa sổ nằm giữa đoạn tường này
             offset = length / 2
 
             data["instances"][iid] = {
                 "symbol": "window.slider",
                 "constraint": {
-                    # Quan trọng: Attach ngay vào cái tường (current_wall_id) vừa tạo ở trên
                     "attachTo": {"kind": "wall", "id": current_wall_id},
-                    "offsetFromStart": offset
+                    "offsetFromStart": round(offset, 2)
                 },
                 "props": {
-                    "width": length # Chiều rộng cửa sổ bằng đúng chiều dài đoạn tường
+                    "width": round(length, 2)
                 }
             }
             inst_counter += 1
 
-        # Tăng wall_counter sau khi xử lý xong cặp (u,v) này
         wall_counter += 1
+        
     basepath = './output/json_outputs/'
     os.makedirs(basepath, exist_ok=True)
     filepath = os.path.join(basepath, file_name)

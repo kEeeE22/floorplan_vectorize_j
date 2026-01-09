@@ -7,24 +7,21 @@ from .utils import project_point_on_segment
 def build_labeled_graph(walls, windows):
     G = nx.Graph()
 
-    def add_polylines(polylines, is_window_flag):
+    def add_polylines(polylines, is_window):
         for poly in polylines:
             for i in range(len(poly) - 1):
                 p1 = poly[i]
-
                 p2 = poly[i+1]
 
-                u = tuple(map(lambda x: int(round(x)), p1))
-                v = tuple(map(lambda x: int(round(x)), p2))
+                u = tuple(map(float, p1))
+                v = tuple(map(float, p2))
 
                 if u != v:
                     dist = math.hypot(u[0]-v[0], u[1]-v[1])
-                    G.add_edge(u, v, weight=dist, is_window=is_window_flag)
+                    G.add_edge(u, v, weight=dist, is_window=is_window)
 
-    add_polylines(walls, is_window_flag=False)
-
-    # Thêm cửa sổ (is_window = True)
-    add_polylines(windows, is_window_flag=True)
+    add_polylines(walls, is_window=False)
+    add_polylines(windows, is_window=True)
 
     return G
 
@@ -71,8 +68,6 @@ def split_edges_by_nodes(G, tolerance=5.0):
             # Sắp xếp các điểm theo thứ tự từ u đến v (dựa vào t)
             points_on_edge.sort(key=lambda x: x[0])
 
-            # Tạo các cạnh nối tiếp: p1->p2, p2->p3...
-            # Giữ lại thuộc tính (kind='wall'/'window') của cạnh gốc
             original_data = G.get_edge_data(u, v)
 
             for i in range(len(points_on_edge) - 1):
@@ -110,8 +105,7 @@ def zip_thick_walls(G, thickness_threshold=15):
         short_edges = []
         for u, v, data in G.edges(data=True):
             w = data.get('weight', 0)
-            # Chỉ gộp nếu cạnh ngắn và không phải là cạnh nối chính nó
-            if 0 < w < thickness_threshold and u != v:
+            if 0 < w < thickness_threshold and u != v and data.get('is_window', False):
                 short_edges.append((u, v))
 
         if not short_edges:
@@ -144,11 +138,11 @@ def simplify_graph_topology(G, collinear_threshold=0.1):
 
                 # --- FIX 1: KIỂM TRA LOẠI CẠNH ---
                 # Lấy loại của cạnh 1 và cạnh 2
-                kind1 = G.get_edge_data(u, node).get('kind')
-                kind2 = G.get_edge_data(node, v).get('kind')
+                is_window1 = G.get_edge_data(u, node).get('is_window')
+                is_window2 = G.get_edge_data(node, v).get('is_window')
 
                 # Nếu khác loại (1 cái Tường, 1 cái Cửa) -> TUYỆT ĐỐI KHÔNG XÓA
-                if kind1 != kind2:
+                if is_window1 != is_window2:
                     continue
                 # ---------------------------------
 
@@ -174,7 +168,7 @@ def simplify_graph_topology(G, collinear_threshold=0.1):
             if not G.has_node(node): continue
             if not G.has_edge(u, node) or not G.has_edge(node, v): continue
 
-            # Copy thuộc tính (lúc này đã an toàn vì kind1 == kind2)
+            # Copy thuộc tính (lúc này đã an toàn vì is_window1 == is_window2)
             attr = G.get_edge_data(u, node).copy()
             new_weight = np.linalg.norm(np.array(u) - np.array(v))
             attr['weight'] = new_weight
@@ -236,14 +230,8 @@ def orthogonalize_graph(G, angle_threshold=15, iterations=10):
             if moves_y[n]:
                 pos[n][1] = sum(moves_y[n]) / len(moves_y[n])
 
-    mapping = {}
-    for n in nodes:
-        new_x = int(round(pos[n][0]))
-        new_y = int(round(pos[n][1]))
-        mapping[n] = (new_x, new_y)
-
+    mapping = {n: (pos[n][0], pos[n][1]) for n in nodes}
     G_final = nx.relabel_nodes(G, mapping, copy=True)
-
     G_final.remove_edges_from(nx.selfloop_edges(G_final))
 
     return G_final
